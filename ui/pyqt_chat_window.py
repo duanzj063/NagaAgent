@@ -408,16 +408,26 @@ class ChatWindow(QWidget):
         return page
 
     def resizeEvent(s, e):
-        if getattr(s, '_animating', False):  # 动画期间跳过自适应刷新，提升动画流畅度
+        if getattr(s, '_animating', False):  # 动画期间跳过所有重绘操作，避免卡顿
             return
         if hasattr(s,'img') and hasattr(s,'nick'):
             s.img.resize(s.img.parent().width(), s.img.parent().height())
             s.nick.resize(s.img.width(), 48) # 48为昵称高度，可自调
             s.nick.move(0,0)
-            p=os.path.join(os.path.dirname(__file__),'standby.png')
-            q=QPixmap(p)
+            # 延迟图片缩放操作，避免频繁重绘
+            if not hasattr(s, '_resize_timer'):
+                s._resize_timer = QTimer()
+                s._resize_timer.setSingleShot(True)
+                s._resize_timer.timeout.connect(s._delayed_image_resize)
+            s._resize_timer.start(50)  # 50ms后执行图片缩放
+            
+    def _delayed_image_resize(s):
+        """延迟执行的图片缩放，避免频繁重绘"""
+        if hasattr(s, 'img') and not getattr(s, '_animating', False):
+            p = os.path.join(os.path.dirname(__file__), 'standby.png')
+            q = QPixmap(p)
             if os.path.exists(p) and not q.isNull():
-                s.img.setPixmap(q.scaled(s.img.width(),s.img.height(),Qt.KeepAspectRatioByExpanding,Qt.SmoothTransformation))
+                s.img.setPixmap(q.scaled(s.img.width(), s.img.height(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
 
     def adjust_input_height(s):
         doc = s.input.document()
@@ -611,6 +621,7 @@ class ChatWindow(QWidget):
         s._animating = True  # 设置动画标志位
         s.full_img^=1  # 立绘展开标志切换
         target_width = 800 if s.full_img else 400  # 目标宽度
+        
         # --- 立即切换界面状态 ---
         if s.full_img:
             s.input_wrap.hide()  # 立即隐藏输入框
@@ -643,73 +654,79 @@ class ChatWindow(QWidget):
             s.side.enterEvent = s.side_hover_enter
             s.side.leaveEvent = s.side_hover_leave
         # --- 立即切换界面状态 END ---
+        
+        # 创建优化后的动画组
         group = QParallelAnimationGroup(s)
+        
+        # 侧栏宽度动画 - 合并为单个动画
         side_anim = QPropertyAnimation(s.side, b"minimumWidth", s)
         side_anim.setDuration(ANIMATION_DURATION)
         side_anim.setStartValue(s.side.width())
         side_anim.setEndValue(target_width)
-        side_anim.setEasingCurve(QEasingCurve.OutExpo)
+        side_anim.setEasingCurve(QEasingCurve.OutCubic)  # 使用更流畅的缓动
         group.addAnimation(side_anim)
+        
         side_anim2 = QPropertyAnimation(s.side, b"maximumWidth", s)
         side_anim2.setDuration(ANIMATION_DURATION)
         side_anim2.setStartValue(s.side.width())
         side_anim2.setEndValue(target_width)
-        side_anim2.setEasingCurve(QEasingCurve.OutExpo)
+        side_anim2.setEasingCurve(QEasingCurve.OutCubic)
         group.addAnimation(side_anim2)
+        
+        # 聊天区域宽度动画
         chat_area = s.side.parent().findChild(QWidget)
         if hasattr(s, 'chat_area'):
             chat_area = s.chat_area
         else:
             chat_area = s.side.parent().children()[1]
-        chat_target_width = s.width() - target_width - 30  # 基于实际窗口宽度计算
+        chat_target_width = s.width() - target_width - 30
+        
         chat_anim = QPropertyAnimation(chat_area, b"minimumWidth", s)
         chat_anim.setDuration(ANIMATION_DURATION)
         chat_anim.setStartValue(chat_area.width())
         chat_anim.setEndValue(chat_target_width)
-        chat_anim.setEasingCurve(QEasingCurve.OutExpo)
+        chat_anim.setEasingCurve(QEasingCurve.OutCubic)
         group.addAnimation(chat_anim)
+        
         chat_anim2 = QPropertyAnimation(chat_area, b"maximumWidth", s)
         chat_anim2.setDuration(ANIMATION_DURATION)
         chat_anim2.setStartValue(chat_area.width())
         chat_anim2.setEndValue(chat_target_width)
-        chat_anim2.setEasingCurve(QEasingCurve.OutExpo)
+        chat_anim2.setEasingCurve(QEasingCurve.OutCubic)
         group.addAnimation(chat_anim2)
-        input_hide_anim = QPropertyAnimation(s.input_wrap, b"maximumHeight", s)
-        input_hide_anim.setDuration(ANIMATION_DURATION // 3)
-        input_hide_anim.setStartValue(s.input_wrap.height())
-        input_hide_anim.setEndValue(0 if s.full_img else 48)
-        input_hide_anim.setEasingCurve(QEasingCurve.InOutQuart)
-        group.addAnimation(input_hide_anim)
-        input_opacity_anim = QPropertyAnimation(s.input, b"windowOpacity", s)
-        input_opacity_anim.setDuration(ANIMATION_DURATION // 4)
-        input_opacity_anim.setStartValue(1.0)
-        input_opacity_anim.setEndValue(0.0 if s.full_img else 1.0)
-        input_opacity_anim.setEasingCurve(QEasingCurve.InOutQuart)
-        group.addAnimation(input_opacity_anim)
-        p = os.path.join(os.path.dirname(__file__), 'standby.png')
-        if os.path.exists(p):
-            pixmap = QPixmap(p)
-            if not pixmap.isNull():
-                img_scale_anim = QPropertyAnimation(s.img, b"geometry", s)
-                img_scale_anim.setDuration(ANIMATION_DURATION)
-                current_rect = s.img.geometry()
-                target_rect = QRect(0, 0, target_width, s.side.height())
-                img_scale_anim.setStartValue(current_rect)
-                img_scale_anim.setEndValue(target_rect)
-                img_scale_anim.setEasingCurve(QEasingCurve.OutExpo)
-                group.addAnimation(img_scale_anim)
+        
+        # 输入框动画 - 简化
+        if s.full_img:
+            input_hide_anim = QPropertyAnimation(s.input_wrap, b"maximumHeight", s)
+            input_hide_anim.setDuration(ANIMATION_DURATION // 3)
+            input_hide_anim.setStartValue(s.input_wrap.height())
+            input_hide_anim.setEndValue(0)
+            input_hide_anim.setEasingCurve(QEasingCurve.OutQuad)
+            group.addAnimation(input_hide_anim)
+        
+        # 移除图片几何动画，避免重绘卡顿
+        # 动画完成后的处理
         def on_animation_finished():
-            p = os.path.join(os.path.dirname(__file__), 'standby.png')
-            if os.path.exists(p):
-                q = QPixmap(p)
-                if not q.isNull():
-                    s.img.setPixmap(q.scaled(target_width, s.side.height(), 
-                                           Qt.KeepAspectRatio if s.full_img else Qt.KeepAspectRatioByExpanding, 
-                                           Qt.SmoothTransformation))  # 动画结束后再缩放图片，提升流畅度
-            s._animating = False  # 动画结束，允许自适应
-            s.resizeEvent(None)  # 动画结束后手动刷新一次，保证布局和图片同步
+            # 延迟图片缩放，避免阻塞动画
+            QTimer.singleShot(10, lambda: s._finalize_image_resize(target_width))
+            s._animating = False  # 动画结束标志
+            
         group.finished.connect(on_animation_finished)
         group.start()
+        
+    def _finalize_image_resize(s, target_width):
+        """动画完成后的图片缩放处理"""
+        p = os.path.join(os.path.dirname(__file__), 'standby.png')
+        if os.path.exists(p):
+            q = QPixmap(p)
+            if not q.isNull() and hasattr(s, 'img'):
+                # 根据模式选择缩放方式
+                scale_mode = Qt.KeepAspectRatio if s.full_img else Qt.KeepAspectRatioByExpanding
+                s.img.setPixmap(q.scaled(target_width, s.side.height(), scale_mode, Qt.SmoothTransformation))
+                # 确保图片大小正确
+                s.img.resize(target_width, s.side.height())
+                s.nick.resize(target_width, 48)
+                s.nick.move(0, 0)
 
     # 添加整个窗口的拖动支持
     def mousePressEvent(s, event):
@@ -798,7 +815,7 @@ class ChatWindow(QWidget):
         # 其他初始化代码...
         s.setFocus()
         s.input.setFocus()
-        if not getattr(s, '_img_inited', False):
+        if not getattr(s, '_img_inited', False) and not getattr(s, '_animating', False):
             if hasattr(s, 'img'):
                 s.img.resize(s.img.parent().width(), s.img.parent().height())
                 p = os.path.join(os.path.dirname(__file__), 'standby.png')
