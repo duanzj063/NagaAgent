@@ -102,11 +102,33 @@ python check_env.py
 ```
 
 ### 解决常见警告
+#### WebSockers弃用警告
+
 如果遇到websockets相关的弃用警告，请运行：
+
 ```bash
 python upgrade_websockets.py
 ```
 这将自动升级websockets库到最新版本并解决弃用警告。
+
+#### Numpy built with MINGW-W64 on Windows 64 bits is experimental 错误
+
+如果出现如下错误：
+
+```
+<frozen importlib._bootstrap>:488: Warning: Numpy built with MINGW-W64 on Windows 64 bits is experimental, and only available for
+testing. You are advised not to use it for production.
+```
+
+请安装Visual Studio最新版并且进入Developer Command Prompt For VS运行：
+
+```bash
+uv sync --no-cache
+```
+
+
+
+
 
 ---
 
@@ -1091,7 +1113,7 @@ POST /system/devmode
 
 # 获取记忆统计
 GET /memory/stats
-``` 
+```
 
 ## MCP服务Agent化升级说明
 
@@ -1131,4 +1153,4 @@ GET /memory/stats
   "agent_name": "Agent名称",
   "prompt": "任务内容"
 }
-``` 
+```
