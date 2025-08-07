@@ -427,7 +427,10 @@ class ChatWindow(QWidget):
             p = os.path.join(os.path.dirname(__file__), 'standby.png')
             q = QPixmap(p)
             if os.path.exists(p) and not q.isNull():
-                s.img.setPixmap(q.scaled(s.img.width(), s.img.height(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+                # 确保图片完全填满侧栏，无空隙
+                parent_width = s.img.parent().width()
+                parent_height = s.img.parent().height()
+                s.img.setPixmap(q.scaled(parent_width, parent_height, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
 
     def adjust_input_height(s):
         doc = s.input.document()
@@ -704,29 +707,51 @@ class ChatWindow(QWidget):
             input_hide_anim.setEasingCurve(QEasingCurve.OutQuad)
             group.addAnimation(input_hide_anim)
         
-        # 移除图片几何动画，避免重绘卡顿
-        # 动画完成后的处理
+        # 预加载原始图片，避免重复加载
+        if not hasattr(s, '_original_pixmap'):
+            p = os.path.join(os.path.dirname(__file__), 'standby.png')
+            if os.path.exists(p):
+                s._original_pixmap = QPixmap(p)
+        
+        def on_side_width_changed():
+            """侧栏宽度变化时实时更新图片"""
+            if hasattr(s, '_original_pixmap') and not s._original_pixmap.isNull():
+                current_width = s.side.width() - 10  # 减去margin
+                current_height = s.side.height() - 10
+                
+                if current_width > 50 and current_height > 50:  # 避免过小尺寸
+                    # 实时缩放并设置图片
+                    scaled_pixmap = s._original_pixmap.scaled(
+                        current_width, current_height, 
+                        Qt.KeepAspectRatioByExpanding, 
+                        Qt.FastTransformation  # 使用快速变换，提高性能
+                    )
+                    s.img.setPixmap(scaled_pixmap)
+                    s.img.resize(current_width, current_height)
+                    s.nick.resize(current_width, 48)
+                    s.nick.move(0, 0)
+        
         def on_animation_finished():
-            # 延迟图片缩放，避免阻塞动画
-            QTimer.singleShot(10, lambda: s._finalize_image_resize(target_width))
             s._animating = False  # 动画结束标志
-            
+            # 最终使用高质量变换
+            if hasattr(s, '_original_pixmap') and not s._original_pixmap.isNull():
+                actual_width = target_width - 10
+                actual_height = s.side.height() - 10
+                final_pixmap = s._original_pixmap.scaled(
+                    actual_width, actual_height,
+                    Qt.KeepAspectRatioByExpanding,
+                    Qt.SmoothTransformation  # 最终使用高质量变换
+                )
+                s.img.setPixmap(final_pixmap)
+                s.img.resize(actual_width, actual_height)
+                s.nick.resize(actual_width, 48)
+                s.nick.move(0, 0)
+        
+        # 连接信号
+        side_anim.valueChanged.connect(on_side_width_changed)
         group.finished.connect(on_animation_finished)
         group.start()
         
-    def _finalize_image_resize(s, target_width):
-        """动画完成后的图片缩放处理"""
-        p = os.path.join(os.path.dirname(__file__), 'standby.png')
-        if os.path.exists(p):
-            q = QPixmap(p)
-            if not q.isNull() and hasattr(s, 'img'):
-                # 根据模式选择缩放方式
-                scale_mode = Qt.KeepAspectRatio if s.full_img else Qt.KeepAspectRatioByExpanding
-                s.img.setPixmap(q.scaled(target_width, s.side.height(), scale_mode, Qt.SmoothTransformation))
-                # 确保图片大小正确
-                s.img.resize(target_width, s.side.height())
-                s.nick.resize(target_width, 48)
-                s.nick.move(0, 0)
 
     # 添加整个窗口的拖动支持
     def mousePressEvent(s, event):
@@ -817,11 +842,17 @@ class ChatWindow(QWidget):
         s.input.setFocus()
         if not getattr(s, '_img_inited', False) and not getattr(s, '_animating', False):
             if hasattr(s, 'img'):
-                s.img.resize(s.img.parent().width(), s.img.parent().height())
+                # 获取实际的侧栏尺寸（减去margin）
+                parent_width = s.img.parent().width()
+                parent_height = s.img.parent().height()
+                actual_width = parent_width - 10  # 减去左右margin 5px
+                actual_height = parent_height - 10  # 减去上下margin 5px
+                
+                s.img.resize(actual_width, actual_height)
                 p = os.path.join(os.path.dirname(__file__), 'standby.png')
                 q = QPixmap(p)
                 if os.path.exists(p) and not q.isNull():
-                    s.img.setPixmap(q.scaled(s.img.width(), s.img.height(), Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+                    s.img.setPixmap(q.scaled(actual_width, actual_height, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
             s._img_inited = True
 
     def upload_document(s):
