@@ -49,7 +49,7 @@ chmod +x setup_mac.sh
 ## 🖥️ 系统要求
 - **Windows:** Windows 10/11 + PowerShell 5.1+
 - **Mac:** macOS 10.15 (Catalina) 或更高版本 + Homebrew
-- **通用:** Python 3.8+ (推荐 3.11)
+- **通用:** Python 3.10+ (推荐 3.11)
 
 ---
 
@@ -94,6 +94,22 @@ pip install jmcomic fastmcp
 ### 环境检查
 ```bash
 python check_env.py
+```
+
+#### Numpy built with MINGW-W64 on Windows 64 bits is experimental 错误
+
+如果出现如下错误：
+
+```
+<frozen importlib._bootstrap>:488: Warning: Numpy built with MINGW-W64 on Windows 64 bits is experimental, and only available for
+testing. You are advised not to use it for production.
+```
+
+请安装Visual Studio最新版并且进入Developer Command Prompt For VS依次执行：
+
+```bash
+uv pip uninstall numpy
+uv sync --no-cache
 ```
 
 ---
