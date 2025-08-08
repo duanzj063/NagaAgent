@@ -49,7 +49,7 @@ chmod +x setup_mac.sh
 ## 🖥️ 系统要求
 - **Windows:** Windows 10/11 + PowerShell 5.1+
 - **Mac:** macOS 10.15 (Catalina) 或更高版本 + Homebrew
-- **通用:** Python 3.8+ (推荐 3.11)
+- **通用:** Python 3.10+ (推荐 3.11)
 
 ---
 
@@ -94,6 +94,24 @@ pip install jmcomic fastmcp
 ### 环境检查
 ```bash
 python check_env.py
+```
+
+### 解决常见警告
+
+### Numpy built with MINGW-W64 on Windows 64 bits is experimental 错误
+
+如果出现如下错误：
+
+```
+<frozen importlib._bootstrap>:488: Warning: Numpy built with MINGW-W64 on Windows 64 bits is experimental, and only available for
+testing. You are advised not to use it for production.
+```
+
+请安装Visual Studio最新版并且进入Developer Command Prompt For VS依次执行：
+
+```bash
+uv pip uninstall numpy
+uv sync --no-cache
 ```
 
 ---
@@ -518,6 +536,39 @@ POST /system/devmode
 
 # 获取记忆统计
 GET /memory/stats
+<<<<<<< HEAD
+=======
+```
+
+## MCP服务Agent化升级说明
+
+- 所有MCP服务（如文件、代码、浏览器、应用启动、系统控制、天气等）已全部升级为标准Agent风格：
+  - 统一继承自`agents.Agent`，具备`name`、`instructions`属性和`handle_handoff`异步方法
+  - 变量全部走`config.py`统一管理，避免重复定义
+  - 注释全部中文，文件/类/函数注释一行，变量注释右侧#
+  - 支持多agent协作，ControllerAgent可智能分配任务给BrowserAgent、ContentAgent等
+  - 注册中心`mcp_registry.py`自动发现并注册所有实现了`handle_handoff`的Agent实例，支持热插拔
+  - 注册时自动输出所有已注册agent的名称和说明，便于调试
+  - 简化Agent类型：只支持`mcp`和`agent`两种类型
+
+- handoff机制全部通过`handle_handoff`异步方法调度，兼容JSON和handoff两种格式
+
+- 新增/删除agent只需增删py文件，无需重启主程序
+
+- 详细接口和参数请参考各Agent代码注释与`config.py`配置 
+
+## 更新日志
+
+- 工具调用格式已优化，改为纯JSON格式，更加简洁规范，具体示例如下：
+
+```
+{
+  "agentType": "mcp",
+  "service_name": "MCP服务名称",
+  "tool_name": "工具名称",
+  "参数名": "参数值"
+}
+>>>>>>> 805fd5d48377a59b6efa7cfb2ed58d26d8bc26e6
 ```
 
 ---
@@ -609,6 +660,7 @@ GET /memory/stats
 ```bash
 python check_env.py
 ```
+<<<<<<< HEAD
 
 ### Windows 环境
 - **Python版本/依赖/虚拟环境/浏览器驱动等问题**: 详见`setup.ps1`与本README
@@ -683,3 +735,11 @@ MIT License
 ---
 
 如需详细功能/API/扩展说明，见各模块注释与代码，所有变量唯一、注释中文、极致精简。 
+=======
+{
+  "agentType": "agent",
+  "agent_name": "Agent名称",
+  "prompt": "任务内容"
+}
+```
+>>>>>>> 805fd5d48377a59b6efa7cfb2ed58d26d8bc26e6
