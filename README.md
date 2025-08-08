@@ -120,9 +120,10 @@ python upgrade_websockets.py
 testing. You are advised not to use it for production.
 ```
 
-请安装Visual Studio最新版并且进入Developer Command Prompt For VS运行：
+请安装Visual Studio最新版并且进入Developer Command Prompt For VS依次执行：
 
 ```bash
+uv pip uninstall numpy
 uv sync --no-cache
 ```
 
