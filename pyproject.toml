@@ -83,6 +83,7 @@ dependencies = [
     "fastmcp>=2.11.2", # MCP工具框架
     # MQTT通信相关依赖
     "paho-mqtt>=2.0.0", # MQTT客户端库
+    # 其他依赖
     "python-docx>=1.2.0",
     "mqtt-tool>=0.1.1",
 ]
