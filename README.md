@@ -15,6 +15,7 @@ cd NagaAgent3.0
 ### 2. 一键配置
 
 **Windows:**
+
 ```powershell
 .\setup.ps1
 ```
@@ -25,7 +26,33 @@ chmod +x setup_mac.sh
 ./setup_mac.sh
 ```
 
-### 3. 启动应用
+### 3.启动neo4j docker服务
+
+#### 1.安装docker
+
+**Windows:**
+
+下载[https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe](https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe)并安装
+
+**其它系统:**
+
+请自行搜索安装方式
+
+#### 2.启动neo4j镜像服务
+
+```
+docker run -d --restart always --publish=7474:7474 --publish=7687:7687 --env NEO4J_AUTH=neo4j/your_password --volume=/path/to/your/data:/data neo4j
+```
+
+如果启动失败可以更换端口例如：
+
+```
+--publish=8474:7474 --publish=8687:7687
+```
+
+### 4.复制config.json.example为config.json并且根据注释修改参数
+
+### 5. 启动应用
 
 **Windows (普通模式):**
 ```powershell
@@ -536,8 +563,6 @@ POST /system/devmode
 
 # 获取记忆统计
 GET /memory/stats
-<<<<<<< HEAD
-=======
 ```
 
 ## MCP服务Agent化升级说明
@@ -568,7 +593,6 @@ GET /memory/stats
   "tool_name": "工具名称",
   "参数名": "参数值"
 }
->>>>>>> 805fd5d48377a59b6efa7cfb2ed58d26d8bc26e6
 ```
 
 ---
@@ -660,8 +684,6 @@ GET /memory/stats
 ```bash
 python check_env.py
 ```
-<<<<<<< HEAD
-
 ### Windows 环境
 - **Python版本/依赖/虚拟环境/浏览器驱动等问题**: 详见`setup.ps1`与本README
 - **IDE报import错误**: 重启并选择正确解释器
@@ -730,16 +752,8 @@ python check_env.py
 ---
 
 ## 📝 许可证
-MIT License
+[MIT License](LICENSE)
 
----
 
-如需详细功能/API/扩展说明，见各模块注释与代码，所有变量唯一、注释中文、极致精简。 
-=======
-{
-  "agentType": "agent",
-  "agent_name": "Agent名称",
-  "prompt": "任务内容"
-}
-```
->>>>>>> 805fd5d48377a59b6efa7cfb2ed58d26d8bc26e6
+
+> 如需详细功能/API/扩展说明，见各模块注释与代码。

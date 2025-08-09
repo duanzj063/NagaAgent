@@ -56,7 +56,8 @@ dependencies = [
     "typing-extensions>=4.13.2",
     "markdown>=3.8",
     # GUI界面相关依赖
-    "pyqt5>=5.15.11",
+    "pyqt5-qt5 ==5.15.2",
+    "pyqt5==5.15.11",
     "playwright>=1.52.0",
     "greenlet>=3.2.1",
     "pyee>=13.0.0",
@@ -118,3 +119,4 @@ include = ["apiserver","mcpserver","mqtt_tool", "agent", "summer_memory", "think
 
 [tool.ruff]
 line-length = 120 
+
