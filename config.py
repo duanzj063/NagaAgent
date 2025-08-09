@@ -1,4 +1,4 @@
-﻿# config.py - Pydantic配置系统
+# config.py - Pydantic配置系统
 """
 NagaAgent 配置系统 - 基于Pydantic实现类型安全和验证
 """
