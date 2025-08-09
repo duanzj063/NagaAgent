@@ -27,7 +27,6 @@ dependencies = [
     "flask>=3.1.0",
     "gevent>=25.5.1",
     "edge-tts>=7.0.2",
-    "emoji>=2.14.1",
     "fastapi>=0.115.0",
     # 网络通信相关依赖
     "uvicorn[standard]>=0.34.0",
@@ -56,7 +55,8 @@ dependencies = [
     "typing-extensions>=4.13.2",
     "markdown>=3.8",
     # GUI界面相关依赖
-    "pyqt5>=5.15.11",
+    "pyqt5-qt5 ==5.15.2",
+    "pyqt5==5.15.11",
     "playwright>=1.52.0",
     "greenlet>=3.2.1",
     "pyee>=13.0.0",
@@ -66,7 +66,6 @@ dependencies = [
     "sounddevice>=0.4.6",
     "soundfile>=0.12.1",
     "pyaudio>=0.2.14",
-    "edge-tts>=6.1.9",
     "emoji>=2.8.0",
     # 系统托盘相关依赖
     "pystray>=0.19.4",
@@ -118,3 +117,4 @@ include = ["apiserver","mcpserver","mqtt_tool", "agent", "summer_memory", "think
 
 [tool.ruff]
 line-length = 120 
+
