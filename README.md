@@ -1,12 +1,12 @@
 # NagaAgent 3.0
 
-<div align="center">
 ![NagaAgent Logo](https://img.shields.io/badge/NagaAgent-3.0-blue?style=for-the-badge&logo=python&logoColor=white)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-green?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python)
 ![Version](https://img.shields.io/badge/Version-3.0.5-orange?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge)
+
 
 ![Star History](https://img.shields.io/github/stars/Xxiii8322766509/NagaAgent?style=social)![Forks](https://img.shields.io/github/forks/Xxiii8322766509/NagaAgent?style=social)![Issues](https://img.shields.io/github/issues/Xxiii8322766509/NagaAgent)![Pull Requests](https://img.shields.io/github/issues-pr/Xxiii8322766509/NagaAgent)
 
@@ -20,8 +20,6 @@
 
 ### 🎯 项目亮点
 
-<div align="left">
-
 ✅ **🧠 智能记忆**: 基于 Neo4j 的知识图谱记忆系统  
 ✅ **🔧 丰富生态**: 支持多种 MCP 服务和 Agent  
 ✅ **🎤 语音交互**: 流式语音合成和识别  
@@ -30,10 +28,6 @@
 ✅ **📱 系统托盘**: 后台运行和自启动支持  
 ✅ **🔍 智能代理**: 动态服务发现和管理  
 ✅ **🛡️ 安全可靠**: 会话隔离和权限管理  
-
-</div>
-
-</div>
 
 ---
 
