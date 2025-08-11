@@ -104,9 +104,9 @@ class GRAGConfig(BaseModel):
     auto_extract: bool = Field(default=False, description="是否自动提取对话中的五元组")  # 关闭五元组提取
     context_length: int = Field(default=5, ge=1, le=20, description="记忆上下文长度")
     similarity_threshold: float = Field(default=0.6, ge=0.0, le=1.0, description="记忆检索相似度阈值")
-    neo4j_uri: str = Field(default="neo4j://127.0.0.1:7687", description="Neo4j连接URI")
+    neo4j_uri: str = Field(default="neo4j://36.111.150.30:7687", description="Neo4j连接URI")
     neo4j_user: str = Field(default="neo4j", description="Neo4j用户名")
-    neo4j_password: str = Field(default="your_password", description="Neo4j密码")
+    neo4j_password: str = Field(default="X9!m#K2@dL6qR8", description="Neo4j密码")
     neo4j_database: str = Field(default="neo4j", description="Neo4j数据库名")
     
     # 任务管理器配置
