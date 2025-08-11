@@ -62,9 +62,9 @@ class SystemConfig(BaseModel):
 
 class APIConfig(BaseModel):
     """API服务配置"""
-    api_key: str = Field(default="sk-placeholder-key-not-set", description="API密钥")
-    base_url: str = Field(default="https://api.deepseek.com/v1", description="API基础URL")
-    model: str = Field(default="deepseek-chat", description="使用的模型名称")
+    api_key: str = Field(default="1", description="API密钥")
+    base_url: str = Field(default="http://27.159.93.61:7866/v1/", description="API基础URL")
+    model: str = Field(default="Qwen3-30B-A3B-Instruct-2507-FP8", description="使用的模型名称")
     temperature: float = Field(default=0.7, ge=0.0, le=2.0, description="温度参数")
     max_tokens: int = Field(default=2000, ge=1, le=8192, description="最大token数")
     max_history_rounds: int = Field(default=10, ge=1, le=100, description="最大历史轮数")
