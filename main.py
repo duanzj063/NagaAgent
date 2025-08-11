@@ -28,6 +28,14 @@ from ui.pyqt_chat_window import ChatWindow
 # 导入控制台托盘功能
 from ui.tray.console_tray import integrate_console_tray
 
+# 导入Live2D模块
+try:
+    from live2d_module import init_live2d_module, get_live2d_status, check_dependencies
+    LIVE2D_AVAILABLE = True
+except ImportError:
+    LIVE2D_AVAILABLE = False
+    print("⚠️ Live2D模块不可用")
+
 n=NagaConversation()
 def show_help():print('系统命令: 清屏, 查看索引, 帮助, 退出')
 def show_index():print('主题分片索引已集成，无需单独索引查看')
@@ -97,6 +105,55 @@ if memory_manager.enabled:
     # 检查Neo4j连接
     from summer_memory.quintuple_graph import graph, GRAG_ENABLED
     print(f"Neo4j连接: {'成功' if graph and GRAG_ENABLED else '失败'}")
+print("=" * 30)
+
+# Live2D模块初始化
+print("=" * 30)
+if LIVE2D_AVAILABLE and config.ui.live2d.enabled:
+    print("正在初始化Live2D模块...")
+    
+    # 检查依赖项
+    deps = check_dependencies()
+    missing_deps = [dep for dep, available in deps.items() if not available]
+    
+    if missing_deps:
+        print(f"⚠️ Live2D依赖项缺失: {', '.join(missing_deps)}")
+        print("   请安装缺失的依赖项以启用完整的Live2D功能")
+    else:
+        # 初始化Live2D模块
+        live2d_config = {
+            "enabled": config.ui.live2d.enabled,
+            "emotion_analysis": config.ui.live2d.emotion_analysis,
+            "lip_sync": config.ui.live2d.lip_sync,
+            "tts_enabled": config.ui.live2d.tts_enabled,
+            "asr_enabled": config.ui.live2d.asr_enabled,
+            "model_path": config.ui.live2d.model_path,
+            "scale": config.ui.live2d.scale,
+            "offset_x": config.ui.live2d.offset_x,
+            "offset_y": config.ui.live2d.offset_y,
+            "cache_enabled": config.ui.live2d.cache_enabled,
+            "cache_dir": config.ui.live2d.cache_dir,
+            "tts_api_url": config.ui.live2d.tts_api_url,
+            "asr_api_url": config.ui.live2d.asr_api_url,
+            "emotion_weights": config.ui.live2d.emotion_weights,
+            "emotion_duration": config.ui.live2d.emotion_duration,
+            "audio_timeout": config.ui.live2d.audio_timeout,
+            "max_retries": config.ui.live2d.max_retries,
+            "retry_delay": config.ui.live2d.retry_delay
+        }
+        
+        if init_live2d_module(live2d_config):
+            status = get_live2d_status()
+            print(f"✅ Live2D模块初始化成功")
+            print(f"   版本: {status['version']}")
+            print(f"   控件可用: {'是' if status['widget_available'] else '否'}")
+            print(f"   情绪处理: {'可用' if status['emotion_handler_available'] else '不可用'}")
+            print(f"   音频适配: {'可用' if status['audio_adapter_available'] else '不可用'}")
+            print(f"   事件总线: {'可用' if status['event_bus_available'] else '不可用'}")
+        else:
+            print("❌ Live2D模块初始化失败")
+else:
+    print("Live2D状态: 禁用")
 print("=" * 30)
 
 print('='*30+'\n娜迦系统已启动\n'+'='*30)

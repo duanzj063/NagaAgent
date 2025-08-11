@@ -328,6 +328,51 @@ class WeatherConfig(BaseModel):
     api_key: str = Field(default="", description="天气服务API密钥")
 
 
+class Live2DConfig(BaseModel):
+    """Live2D数字人配置"""
+    enabled: bool = Field(default=False, description="是否启用Live2D数字人")
+    model_path: str = Field(default="live2d_module/models/fake_neuro_live_2d/hiyori_pro_mic.model3.json", description="Live2D模型路径")
+    auto_start: bool = Field(default=True, description="是否自动启动Live2D")
+    emotion_analysis: bool = Field(default=True, description="是否启用情绪分析")
+    lip_sync: bool = Field(default=True, description="是否启用嘴型同步")
+    tts_enabled: bool = Field(default=True, description="是否启用TTS")
+    asr_enabled: bool = Field(default=True, description="是否启用ASR")
+    scale: float = Field(default=1.0, ge=0.1, le=3.0, description="模型缩放比例")
+    offset_x: int = Field(default=1050, ge=0, le=3840, description="模型X轴偏移")
+    offset_y: int = Field(default=600, ge=0, le=2160, description="模型Y轴偏移")
+    frontend_type: str = Field(default="python", description="前端类型: python/electron")
+    cache_enabled: bool = Field(default=True, description="是否启用音频缓存")
+    cache_dir: str = Field(default="live2d_cache", description="缓存目录")
+    tts_api_url: str = Field(default="http://127.0.0.1:8000/voice/speak", description="TTS API URL")
+    asr_api_url: str = Field(default="http://127.0.0.1:8000/voice/transcribe", description="ASR API URL")
+    emotion_weights: Dict[str, float] = Field(
+        default={
+            "开心": 1.0,
+            "生气": 1.2,
+            "伤心": 1.1,
+            "惊讶": 1.3,
+            "害羞": 0.9,
+            "害怕": 1.0
+        },
+        description="情绪权重配置"
+    )
+    emotion_duration: Dict[str, float] = Field(
+        default={
+            "开心": 2.0,
+            "生气": 1.5,
+            "伤心": 3.0,
+            "惊讶": 1.0,
+            "害羞": 2.5,
+            "害怕": 2.0,
+            "neutral": 1.0
+        },
+        description="情绪持续时间配置"
+    )
+    audio_timeout: int = Field(default=30, ge=5, le=120, description="音频处理超时时间")
+    max_retries: int = Field(default=3, ge=1, le=10, description="最大重试次数")
+    retry_delay: float = Field(default=1.0, ge=0.1, le=10.0, description="重试延迟")
+
+
 class UIConfig(BaseModel):
     """用户界面配置"""
     user_name: str = Field(default="用户", description="默认用户名")
@@ -337,6 +382,7 @@ class UIConfig(BaseModel):
     mac_btn_margin: int = Field(default=16, ge=0, le=50, description="Mac按钮边距")
     mac_btn_gap: int = Field(default=12, ge=0, le=30, description="Mac按钮间距")
     animation_duration: int = Field(default=600, ge=100, le=2000, description="动画时长（毫秒）")
+    live2d: Live2DConfig = Field(default_factory=Live2DConfig, description="Live2D配置")
 
     @field_validator('user_name', mode='before')
     @classmethod
@@ -422,6 +468,7 @@ class NagaConfig(BaseModel):
     mcp: MCPConfig = Field(default_factory=MCPConfig)
     browser: BrowserConfig = Field(default_factory=BrowserConfig)
     tts: TTSConfig = Field(default_factory=TTSConfig)
+    live2d: Live2DConfig = Field(default_factory=Live2DConfig)
 
     filter: FilterConfig = Field(default_factory=FilterConfig)
     difficulty: DifficultyConfig = Field(default_factory=DifficultyConfig)
@@ -642,3 +689,25 @@ if config.system.debug:
 # Edge浏览器相关全局变量
 EDGE_LNK_PATH = config.browser.edge_lnk_path
 EDGE_COMMON_PATHS = config.browser.edge_common_paths
+
+# Live2D数字人配置兼容性变量
+LIVE2D_ENABLED = config.ui.live2d.enabled
+LIVE2D_MODEL_PATH = config.ui.live2d.model_path
+LIVE2D_AUTO_START = config.ui.live2d.auto_start
+LIVE2D_EMOTION_ANALYSIS = config.ui.live2d.emotion_analysis
+LIVE2D_LIP_SYNC = config.ui.live2d.lip_sync
+LIVE2D_TTS_ENABLED = config.ui.live2d.tts_enabled
+LIVE2D_ASR_ENABLED = config.ui.live2d.asr_enabled
+LIVE2D_SCALE = config.ui.live2d.scale
+LIVE2D_OFFSET_X = config.ui.live2d.offset_x
+LIVE2D_OFFSET_Y = config.ui.live2d.offset_y
+LIVE2D_FRONTEND_TYPE = config.ui.live2d.frontend_type
+LIVE2D_CACHE_ENABLED = config.ui.live2d.cache_enabled
+LIVE2D_CACHE_DIR = config.ui.live2d.cache_dir
+LIVE2D_TTS_API_URL = config.ui.live2d.tts_api_url
+LIVE2D_ASR_API_URL = config.ui.live2d.asr_api_url
+LIVE2D_EMOTION_WEIGHTS = config.ui.live2d.emotion_weights
+LIVE2D_EMOTION_DURATION = config.ui.live2d.emotion_duration
+LIVE2D_AUDIO_TIMEOUT = config.ui.live2d.audio_timeout
+LIVE2D_MAX_RETRIES = config.ui.live2d.max_retries
+LIVE2D_RETRY_DELAY = config.ui.live2d.retry_delay

@@ -1,6 +1,6 @@
 import logging
 import os
-# import asyncio # 日志与系统
+import asyncio # 日志与系统
 from datetime import datetime # 时间
 from mcpserver.mcp_manager import get_mcp_manager # 多功能管理
 from agents.extensions.handoff_prompt import RECOMMENDED_PROMPT_PREFIX # handoff提示词
@@ -19,6 +19,13 @@ from thinking.config import COMPLEX_KEYWORDS # 复杂关键词
 from config import config
 # 导入独立的工具调用模块
 from apiserver.tool_call_utils import parse_tool_calls, execute_tool_calls, tool_call_loop
+
+# Live2D模块导入
+try:
+    from live2d_module import event_bus, create_ai_response_event, create_emotion_event
+    LIVE2D_AVAILABLE = True
+except ImportError:
+    LIVE2D_AVAILABLE = False
 
 # GRAG记忆系统导入
 if config.grag.enabled:
@@ -94,6 +101,11 @@ class NagaConversation: # 对话主类
             except Exception as e:
                 logger.warning(f"语音系统初始化失败: {e}")
                 self.voice = None
+        
+        # 初始化Live2D事件处理
+        self.live2d_enabled = LIVE2D_AVAILABLE and config.ui.live2d.enabled
+        if self.live2d_enabled:
+            logger.info("Live2D事件处理已启用")
         
         # 恢复树状思考系统
         self.tree_thinking = None
@@ -390,10 +402,48 @@ class NagaConversation: # 对话主类
                 # 根据配置决定输出方式
                 if is_streaming:
                     # 流式输出最终结果
+                    
+                    # 发布AI响应开始事件
+                    if self.live2d_enabled:
+                        try:
+                            start_event = create_ai_response_event("main", "开始生成响应")
+                            await event_bus.publish("ai_response_start", start_event)
+                        except Exception as e:
+                            logger.debug(f"Live2D事件发布失败: {e}")
+                    
                     for line in final_content.splitlines():
+                        # 发布AI文本块事件
+                        if self.live2d_enabled:
+                            try:
+                                text_event = create_ai_response_event("main", line)
+                                await event_bus.publish("ai_text_chunk", text_event)
+                            except Exception as e:
+                                logger.debug(f"Live2D事件发布失败: {e}")
+                        
                         yield ("娜迦", line)
+                    
+                    # 发布AI响应结束事件
+                    if self.live2d_enabled:
+                        try:
+                            end_event = create_ai_response_event("main", "响应生成完成")
+                            await event_bus.publish("ai_response_end", end_event)
+                        except Exception as e:
+                            logger.debug(f"Live2D事件发布失败: {e}")
                 else:
                     # 非流式输出完整结果
+                    if self.live2d_enabled:
+                        try:
+                            start_event = create_ai_response_event("main", "开始生成响应")
+                            await event_bus.publish("ai_response_start", start_event)
+                            
+                            text_event = create_ai_response_event("main", final_content)
+                            await event_bus.publish("ai_text_chunk", text_event)
+                            
+                            end_event = create_ai_response_event("main", "响应生成完成")
+                            await event_bus.publish("ai_response_end", end_event)
+                        except Exception as e:
+                            logger.debug(f"Live2D事件发布失败: {e}")
+                    
                     yield ("娜迦", final_content)
                 
                 # 保存对话历史

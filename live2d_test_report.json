@@ -1,0 +1,49 @@
+{
+  "timestamp": 627.380367871,
+  "total_tests": 8,
+  "passed_tests": 0,
+  "failed_tests": 8,
+  "pass_rate": 0.0,
+  "test_results": [
+    {
+      "test_name": "模块导入",
+      "success": false,
+      "message": "导入失败: No module named 'pydantic'"
+    },
+    {
+      "test_name": "配置检查",
+      "success": false,
+      "message": "配置检查失败: No module named 'pydantic'"
+    },
+    {
+      "test_name": "依赖项检查",
+      "success": false,
+      "message": "检查失败: No module named 'numpy'"
+    },
+    {
+      "test_name": "事件系统",
+      "success": false,
+      "message": "事件系统测试失败: No module named 'numpy'"
+    },
+    {
+      "test_name": "情绪处理器",
+      "success": false,
+      "message": "情绪处理器测试失败: No module named 'numpy'"
+    },
+    {
+      "test_name": "音频适配器",
+      "success": false,
+      "message": "音频适配器测试失败: No module named 'numpy'"
+    },
+    {
+      "test_name": "对话集成",
+      "success": false,
+      "message": "对话集成测试失败: No module named 'pydantic'"
+    },
+    {
+      "test_name": "主程序集成",
+      "success": false,
+      "message": "主程序集成测试失败: No module named 'pydantic'"
+    }
+  ]
+}

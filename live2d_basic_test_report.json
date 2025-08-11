@@ -1,0 +1,75 @@
+{
+  "timestamp": "2025-08-11 12:36:52.179215",
+  "test_results": {
+    "model_files": {
+      "existing": [
+        "✅ live2d_module/models/fake_neuro_live_2d/hiyori_pro_mic.model3.json (1431 bytes)",
+        "✅ live2d_module/models/fake_neuro_live_2d/hiyori_pro_mic.moc3 (444800 bytes)",
+        "✅ live2d_module/models/fake_neuro_live_2d/hiyori_pro_mic.physics3.json (27695 bytes)",
+        "✅ live2d_module/models/fake_neuro_live_2d/hiyori_pro_mic.pose3.json (160 bytes)"
+      ],
+      "missing": []
+    },
+    "motion_files": {
+      "existing": [
+        "✅ live2d_module/models/fake_neuro_live_2d/motions/Hiyori_m01.motion3.json (11443 bytes)",
+        "✅ live2d_module/models/fake_neuro_live_2d/motions/Hiyori_m02.motion3.json (15189 bytes)",
+        "✅ live2d_module/models/fake_neuro_live_2d/motions/Hiyori_m03.motion3.json (13663 bytes)",
+        "✅ live2d_module/models/fake_neuro_live_2d/motions/Hiyori_m04.motion3.json (9384 bytes)",
+        "✅ live2d_module/models/fake_neuro_live_2d/motions/Hiyori_m05.motion3.json (16463 bytes)",
+        "✅ live2d_module/models/fake_neuro_live_2d/motions/Hiyori_m06.motion3.json (21014 bytes)",
+        "✅ live2d_module/models/fake_neuro_live_2d/motions/Hiyori_m07.motion3.json (9947 bytes)",
+        "✅ live2d_module/models/fake_neuro_live_2d/motions/Hiyori_m08.motion3.json (10974 bytes)",
+        "✅ live2d_module/models/fake_neuro_live_2d/motions/Hiyori_m09.motion3.json (11803 bytes)",
+        "✅ live2d_module/models/fake_neuro_live_2d/motions/Hiyori_m10.motion3.json (10039 bytes)",
+        "✅ live2d_module/models/fake_neuro_live_2d/motions/micoff.motion3.json (778 bytes)",
+        "✅ live2d_module/models/fake_neuro_live_2d/motions/micon.motion3.json (748 bytes)"
+      ],
+      "missing": []
+    },
+    "texture_files": {
+      "existing": [
+        "✅ live2d_module/models/fake_neuro_live_2d/hiyori_pro_mic.2048/texture_00.png (2096617 bytes)",
+        "✅ live2d_module/models/fake_neuro_live_2d/hiyori_pro_mic.2048/texture_01.png (2270992 bytes)"
+      ],
+      "missing": []
+    },
+    "basic_imports": {
+      "successful": [
+        "✅ os",
+        "✅ sys",
+        "✅ json",
+        "✅ logging",
+        "✅ pathlib",
+        "✅ asyncio",
+        "✅ typing",
+        "✅ datetime",
+        "✅ enum"
+      ],
+      "failed": []
+    },
+    "live2d_imports": {
+      "successful": [],
+      "failed": [
+        "❌ live2d_module: No module named 'numpy'",
+        "❌ live2d_module.event_adapter: No module named 'numpy'",
+        "❌ live2d_module.emotion_handler: No module named 'numpy'",
+        "❌ live2d_module.audio_integration: No module named 'numpy'"
+      ]
+    },
+    "configuration": {
+      "existing": [
+        "✅ config.py (31368 bytes)",
+        "✅ config.json.example (1724 bytes)",
+        "✅ requirements.txt (1600 bytes)",
+        "✅ pyproject.toml (3267 bytes)"
+      ],
+      "missing": []
+    }
+  },
+  "summary": {
+    "total_tests": 35,
+    "passed_tests": 31,
+    "pass_rate": 88.57142857142857
+  }
+}

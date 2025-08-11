@@ -1,0 +1,44 @@
+{
+  "timestamp": "2025-08-11 12:36:54.560852",
+  "system_info": {
+    "python_version": "3.12.3",
+    "platform": "linux"
+  },
+  "dependencies": {
+    "numpy_available": false,
+    "pydantic_available": false,
+    "live2d_py_available": false
+  },
+  "model_files": {
+    "count": 4,
+    "total_size": 474086,
+    "files": [
+      {
+        "path": "live2d_module/models/fake_neuro_live_2d/hiyori_pro_mic.model3.json",
+        "size": 1431
+      },
+      {
+        "path": "live2d_module/models/fake_neuro_live_2d/hiyori_pro_mic.moc3",
+        "size": 444800
+      },
+      {
+        "path": "live2d_module/models/fake_neuro_live_2d/hiyori_pro_mic.physics3.json",
+        "size": 27695
+      },
+      {
+        "path": "live2d_module/models/fake_neuro_live_2d/hiyori_pro_mic.pose3.json",
+        "size": 160
+      }
+    ]
+  },
+  "test_results": {
+    "imports_success": false,
+    "basic_tests_success": false,
+    "model_files_complete": true
+  },
+  "recommendations": [
+    "安装numpy: pip install numpy",
+    "安装pydantic: pip install pydantic",
+    "建议使用简化版Live2D模块"
+  ]
+}
