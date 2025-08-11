@@ -31,6 +31,7 @@ from ui.tray.console_tray import integrate_console_tray
 # 导入Live2D模块
 try:
     from live2d_module import init_live2d_module, get_live2d_status, check_dependencies
+    from live2d_module.naga_live2d_model import start_naga_live2d, is_live2d_running, stop_naga_live2d
     LIVE2D_AVAILABLE = True
 except ImportError:
     LIVE2D_AVAILABLE = False
@@ -218,8 +219,42 @@ if __name__=="__main__":
  # 集成控制台托盘功能
  console_tray = integrate_console_tray()
  
+ # 启动Live2D人物（独立窗口）
+ live2d_app = None
+ live2d_model = None
+ if LIVE2D_AVAILABLE and config.ui.live2d.enabled:
+     print("🚀 正在启动Live2D人物...")
+     
+     # 准备Live2D配置
+     live2d_config = {
+         "model_path": config.ui.live2d.model_path,
+         "scale": config.ui.live2d.scale,
+         "offset_x": config.ui.live2d.offset_x,
+         "offset_y": config.ui.live2d.offset_y,
+         "enabled": config.ui.live2d.enabled
+     }
+     
+     try:
+         # 非阻塞方式启动Live2D人物
+         live2d_app, live2d_model = start_naga_live2d(live2d_config, blocking=False)
+         if live2d_app and live2d_model:
+             print("✅ Live2D人物启动成功")
+             print("   💡 提示：使用Ctrl+1~9播放动作，Ctrl+U切换动作")
+             print("   💡 提示：鼠标拖拽移动人物，滚轮缩放大小")
+         else:
+             print("❌ Live2D人物启动失败")
+     except Exception as e:
+         print(f"❌ Live2D人物启动异常: {e}")
+ 
  win=ChatWindow()
  win.setWindowTitle("NagaAgent")
  win.show()
 
- sys.exit(app.exec_())
+ # 运行主应用
+ try:
+     sys.exit(app.exec_())
+ finally:
+     # 清理Live2D资源
+     if LIVE2D_AVAILABLE and is_live2d_running():
+         print("🔄 正在清理Live2D资源...")
+         stop_naga_live2d()
